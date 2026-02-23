@@ -1,0 +1,43 @@
+Yamaha DX7 PATCH DATA
+
+The dx7.patchparams file contains a list of about 30,000 unique patches for the Yamaha DX7 meant as research training data.  
+Each patch is on its own line, and contains the name of the patch, followed by 145 numerical parameters, comma separated.  Also provided
+are the NAMES for each of the parameters, their TYPES (string, metric, boolean, categorical), and their MINIMUM and MAXIMUM values.
+
+
+PARAMETER NAME
+These are names used internally in Edisyn, but they should be relatively self-explanatory.
+The one confusing one might be "operator6oscillatormode" etc., which is 1 if the oscillator [in this case #6] frequency is FIXED and 0 if it is not.
+These parameters do not include the bytes for the PATCH NAME.
+They do not include the so-called "Operator On/Off" parameters, which are not actually patch parameters and not part of a patch sysex file.
+
+"name", "operator6rate1", "operator6rate2", "operator6rate3", "operator6rate4", "operator6level1", "operator6level2", "operator6level3", "operator6level4", "operator6keyboardlevelscalingbreakpoint", "operator6keyboardlevelscalingleftdepth", "operator6keyboardlevelscalingrightdepth", "operator6keyboardlevelscalingleftcurve", "operator6keyboardlevelscalingrightcurve", "operator6keyboardratescaling", "operator6amplitudemodulationsensitivity", "operator6keyvelocitysensitivity", "operator6operatoroutputlevel", "operator6oscillatormode", "operator6frequencycoarse", "operator6frequencyfine", "operator6frequencydetune", "operator5rate1", "operator5rate2", "operator5rate3", "operator5rate4", "operator5level1", "operator5level2", "operator5level3", "operator5level4", "operator5keyboardlevelscalingbreakpoint", "operator5keyboardlevelscalingleftdepth", "operator5keyboardlevelscalingrightdepth", "operator5keyboardlevelscalingleftcurve", "operator5keyboardlevelscalingrightcurve", "operator5keyboardratescaling", "operator5amplitudemodulationsensitivity", "operator5keyvelocitysensitivity", "operator5operatoroutputlevel", "operator5oscillatormode", "operator5frequencycoarse", "operator5frequencyfine", "operator5frequencydetune", "operator4rate1", "operator4rate2", "operator4rate3", "operator4rate4", "operator4level1", "operator4level2", "operator4level3", "operator4level4", "operator4keyboardlevelscalingbreakpoint", "operator4keyboardlevelscalingleftdepth", "operator4keyboardlevelscalingrightdepth", "operator4keyboardlevelscalingleftcurve", "operator4keyboardlevelscalingrightcurve", "operator4keyboardratescaling", "operator4amplitudemodulationsensitivity", "operator4keyvelocitysensitivity", "operator4operatoroutputlevel", "operator4oscillatormode", "operator4frequencycoarse", "operator4frequencyfine", "operator4frequencydetune", "operator3rate1", "operator3rate2", "operator3rate3", "operator3rate4", "operator3level1", "operator3level2", "operator3level3", "operator3level4", "operator3keyboardlevelscalingbreakpoint", "operator3keyboardlevelscalingleftdepth", "operator3keyboardlevelscalingrightdepth", "operator3keyboardlevelscalingleftcurve", "operator3keyboardlevelscalingrightcurve", "operator3keyboardratescaling", "operator3amplitudemodulationsensitivity", "operator3keyvelocitysensitivity", "operator3operatoroutputlevel", "operator3oscillatormode", "operator3frequencycoarse", "operator3frequencyfine", "operator3frequencydetune", "operator2rate1", "operator2rate2", "operator2rate3", "operator2rate4", "operator2level1", "operator2level2", "operator2level3", "operator2level4", "operator2keyboardlevelscalingbreakpoint", "operator2keyboardlevelscalingleftdepth", "operator2keyboardlevelscalingrightdepth", "operator2keyboardlevelscalingleftcurve", "operator2keyboardlevelscalingrightcurve", "operator2keyboardratescaling", "operator2amplitudemodulationsensitivity", "operator2keyvelocitysensitivity", "operator2operatoroutputlevel", "operator2oscillatormode", "operator2frequencycoarse", "operator2frequencyfine", "operator2frequencydetune", "operator1rate1", "operator1rate2", "operator1rate3", "operator1rate4", "operator1level1", "operator1level2", "operator1level3", "operator1level4", "operator1keyboardlevelscalingbreakpoint", "operator1keyboardlevelscalingleftdepth", "operator1keyboardlevelscalingrightdepth", "operator1keyboardlevelscalingleftcurve", "operator1keyboardlevelscalingrightcurve", "operator1keyboardratescaling", "operator1amplitudemodulationsensitivity", "operator1keyvelocitysensitivity", "operator1operatoroutputlevel", "operator1oscillatormode", "operator1frequencycoarse", "operator1frequencyfine", "operator1frequencydetune", "pitchegrate1", "pitchegrate2", "pitchegrate3", "pitchegrate4", "pitcheglevel1", "pitcheglevel2", "pitcheglevel3", "pitcheglevel4", "algorithm", "feedback", "oscillatorkeysync", "lfospeed", "lfodelay", "lfopitchmodulationdepth", "lfoamplitudemodulationdepth", "lfokeysync", "lfowave", "lfopitchmodulationsensitivity", "transpose"
+
+
+
+PARAMETER TYPE
+There are four types:
+    - "s"    STRINGS.  The only string is the name.  It's the first parameter.
+    - "m"    METRIC PARAMETERS.  These are simply numbers.
+    - "b"    BOOLEAN PARAMETERS.  These are 0 or 1 representing TRUE or FALSE (or ON and OFF).
+    - "c"    CATEGORICAL PARAMETERS.  These are values representing some type of class label.  Some guidance on labels:
+                 "operator6keyboardlevelscalingleftcurve" etc.  These values are 0 = negative linear, 1 = negative exponential, 2 = positive exponential, 3 = positive linear
+                 "operator6keyboardlevelscalingrightcurve" etc.  These values are 0 = negative linear, 1 = negative exponential, 2 = positive exponential, 3 = positive linear
+                 "algorithm"   These values are the individual algorithm numbers, 0...31
+                 "lfowave"   These values are 0 = Triangle, 1 = Sawtooth Down, 2 = Sawtooth Up (Ramp), 3 = Square, 4 = Sine, 5 = Sample and Hold
+
+"s", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "c", "c", "m", "m", "m", "m", "b", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "c", "c", "m", "m", "m", "m", "b", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "c", "c", "m", "m", "m", "m", "b", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "c", "c", "m", "m", "m", "m", "b", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "c", "c", "m", "m", "m", "m", "b", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "c", "c", "m", "m", "m", "m", "b", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "m", "c", "m", "b", "m", "m", "m", "m", "b", "c", "m", "m"
+
+
+PARAMETER MINIMUM VALUE
+This is the smallest value the parameter can take on.  All parameters are integers, except the name, which is a string up to 10 chars long.
+
+0 characters, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+
+PARAMETER MAXIMUM VALUE
+This is the largest value the parameter can take on.  All parameters are integers, except the name, which is a string up to 10 chars long.
+
+10 characters, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 3, 3, 7, 3, 7, 99, 1, 31, 99, 14, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 3, 3, 7, 3, 7, 99, 1, 31, 99, 14, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 3, 3, 7, 3, 7, 99, 1, 31, 99, 14, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 3, 3, 7, 3, 7, 99, 1, 31, 99, 14, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 3, 3, 7, 3, 7, 99, 1, 31, 99, 14, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 3, 3, 7, 3, 7, 99, 1, 31, 99, 14, 99, 99, 99, 99, 99, 99, 99, 99, 31, 7, 1, 99, 99, 99, 99, 1, 5, 7, 48
+
+
