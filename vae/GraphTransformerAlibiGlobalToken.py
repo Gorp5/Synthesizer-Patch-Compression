@@ -1,7 +1,47 @@
 from einops import rearrange, repeat
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
+class SparseAutoencoderBlock(nn.Module):
+    def __init__(self, in_dim, sparse_dim, rho=0.05):
+        super().__init__()
+
+        self.encoder = nn.Linear(in_dim, sparse_dim)
+        self.decoder = nn.Linear(sparse_dim, in_dim)
+
+        self.rho = rho  # target sparsity
+
+    def forward(self, l):
+        # Encode
+        sparse_code = F.relu(self.encoder(l))  # enforce non-negativity
+
+        # Decode
+        reconstructed = self.decoder(sparse_code)
+
+        # -----------------------
+        # L1 sparsity loss
+        # -----------------------
+        l1_loss = sparse_code.abs().mean()
+
+        # -----------------------
+        # KL sparsity loss
+        # -----------------------
+        # Compute average activation per unit over batch
+        rho_hat = sparse_code.mean(dim=0)  # [sparse_dim]
+
+        # Clamp to avoid log(0)
+        eps = 1e-8
+        rho_hat = torch.clamp(rho_hat, eps, 1 - eps)
+
+        rho = torch.full_like(rho_hat, self.rho)
+
+        kl_loss = torch.sum(
+            rho * torch.log(rho / rho_hat) +
+            (1 - rho) * torch.log((1 - rho) / (1 - rho_hat))
+        )
+
+        return reconstructed, sparse_code, l1_loss, kl_loss
 
 class FeedForward(nn.Module):
     def __init__(self, dim, hidden_dim):
@@ -121,7 +161,10 @@ class GraphTransformerAutoencoderAlibi(nn.Module):
             sparsity_weight=0.0,
             reparameterization=False,
             algorithm_distance_matricies=False,
-            device="cuda"
+            device="cuda",
+            sparse=False,
+            sparse_latent_space=16,
+            learned_alibi_dists=False
     ):
         super().__init__()
 
@@ -167,9 +210,15 @@ class GraphTransformerAutoencoderAlibi(nn.Module):
         else:
             self.algorithm_distance_matricies = None
 
+        if learned_alibi_dists:
+            algo_dists = torch.randn((num_algorithms, 7, 7))
+            self.algorithm_distance_matricies = nn.Parameter(algo_dists).to("cuda")
+
         self.loss = nn.CrossEntropyLoss(reduction="mean")
         self.num_nodes = 6
 
+        self.sparse = sparse
+        self.sparse_block = SparseAutoencoderBlock(latent_space, sparse_latent_space, rho=0.1)
 
     def reparameterize(self, mean, logvar):
         epsilon = torch.randn_like(logvar).to(self.device)
@@ -252,6 +301,11 @@ class GraphTransformerAutoencoderAlibi(nn.Module):
         x_p = x_p.mean(dim=1)
         latent = self.to_latent(x_p)
 
+        sparse_loss = 0
+        if self.sparse:
+            latent, sparse_latent, l1_loss, kl_loss = self.sparse_block(latent)
+            sparse_loss = l1_loss + kl_loss
+
         logvar = torch.ones((1), device=self.device)
         if self.reparameterization:
             logvar = self.extra_logvar(x_p)
@@ -285,4 +339,4 @@ class GraphTransformerAutoencoderAlibi(nn.Module):
             global_hat[:, :new_algo_index]
         ], dim=1)
 
-        return x_recon, latent, logvar, (alg_probs)
+        return x_recon, latent, logvar, sparse_loss
