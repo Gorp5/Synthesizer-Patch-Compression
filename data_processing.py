@@ -37,7 +37,7 @@ def get_algorithms():
     with open("E:\\Coding\\vae-main\\dx7\\dx7.algorithms", "r") as f:
         for line in f:
             size = 7
-            algorithm = [[1024 for _ in range(size)] for _ in range(size)]
+            algorithm = [[(2**24-1) for _ in range(size)] for _ in range(size)]
             edges = line.split(",")
             for edge in edges:
                 start = int(edge[0]) - 1

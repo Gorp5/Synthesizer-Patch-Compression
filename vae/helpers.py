@@ -70,7 +70,7 @@ def plot_loss(train_losses, train_mse_recon_losses, train_ce_recon_losses, train
     plt.ylabel('Standard Deviation')
 
     plt.tight_layout()
-    os.mkdirs(f"./models/{name}", exists_ok=True)
+    os.makedirs(f"./models/{name}", exist_ok=True)
     plt.savefig(f"./models/{name}/losses.png")
     plt.show()
 
@@ -103,15 +103,15 @@ def visualize_latent_space(model, dataloader, device, NAME, sample_count=1000):
     plt.savefig(f"./models/{NAME}/latent_umap.png")
     plt.show()
 
-    pca = PCA(n_components=2)
-    X_pca = pca.fit_transform(latents)
-    plt.figure()
-    cmap = plt.cm.get_cmap('nipy_spectral', 32)
-    plt.scatter(X_pca[:, 0], X_pca[:, 1], c=labels, cmap=cmap)
-    plt.savefig(f"./models/{NAME}/latent_pca.png")
-    plt.show()
+    # pca = PCA(n_components=2)
+    # X_pca = pca.fit_transform(latents)
+    # plt.figure()
+    # cmap = plt.cm.get_cmap('nipy_spectral', 32)
+    # plt.scatter(X_pca[:, 0], X_pca[:, 1], c=labels, cmap=cmap)
+    # plt.savefig(f"./models/{NAME}/latent_pca.png")
+    # plt.show()
 
-def vae_total_loss(pred, target, be_mask, ce_mask, mse_mask, alg_mask, mu, logvar, beta):
+def vae_total_loss(pred, target, be_mask, ce_mask, mse_mask, alg_mask, mu, logvar, beta, mse_coeff=1, use_kl=True, alg_coeff=1):
     assert not torch.isnan(pred).any()
 
     device = pred.device
@@ -130,11 +130,12 @@ def vae_total_loss(pred, target, be_mask, ce_mask, mse_mask, alg_mask, mu, logva
         bce_loss = torch.tensor(0.0, device=device)
 
     if mse_mask.any():
-        mse_loss = F.mse_loss(
+        mse_loss = F.l1_loss(
             pred[:, mse_mask],
             target[:, mse_mask],
             reduction="mean"
-        )
+        ) * mse_coeff
+
     else:
         mse_loss = torch.tensor(0.0, device=device)
 
@@ -202,10 +203,22 @@ def vae_total_loss(pred, target, be_mask, ce_mask, mse_mask, alg_mask, mu, logva
     else:
         total_mse = torch.tensor(0.0, device=pred.device)
 
-    # KL divergence loss
-    kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1).mean()
-    # free bits (forces KL to stay above some minimum value)
-    kl_loss = torch.mean(torch.clamp(kl_loss, min=0.01))
+    # # KL divergence loss
+    if use_kl:
+        kl_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp(), dim=1).mean()
+        # free bits (forces KL to stay above some minimum value)
+        kl_loss = torch.mean(torch.clamp(kl_loss, min=0.01))
+    else:
+        kl_loss = torch.tensor(0.0)
 
-    total_loss = bce_loss + ce_loss + mse_loss + beta * kl_loss + alg_loss
+    total_loss = mse_loss + bce_loss + ce_loss
+    total_loss *= alg_coeff
+    total_loss += alg_loss
+    total_loss += beta * kl_loss
+
     return total_loss, mse_loss, ce_loss, bce_loss, beta * kl_loss, total_mse, alg_loss
+
+
+from torchmetrics.classification import BinaryAUROC, BinaryAveragePrecision
+import torch
+
