@@ -21,6 +21,7 @@ def dataset_to_numpy(dataset):
 def plot_loss(train_losses, train_mse_recon_losses, train_ce_recon_losses, train_kl_losses, train_be_recon_losses,
               train_algo_recon_losses, val_losses, val_mse_recon_losses, val_ce_recon_losses, val_be_recon_losses,
               val_algo_recon_loss, val_kl_losses, name):
+
     plt.figure(figsize=(24, 6))
     plt.subplot(1, 6, 1)
     plt.plot(train_losses)
@@ -217,8 +218,4 @@ def vae_total_loss(pred, target, be_mask, ce_mask, mse_mask, alg_mask, mu, logva
     total_loss += beta * kl_loss
 
     return total_loss, mse_loss, ce_loss, bce_loss, beta * kl_loss, total_mse, alg_loss
-
-
-from torchmetrics.classification import BinaryAUROC, BinaryAveragePrecision
-import torch
 

@@ -116,3 +116,55 @@ class PatchProcessor:
             t == ord('c'),
             t == ord('x')
         )
+
+import torch
+import torch.nn.functional as F
+
+class PatchProcessorTensor:
+    def __init__(self, params):
+        self.params = params
+
+    def normalize(self, x):
+        x = x.clone().float()
+
+        for i, p in enumerate(self.params):
+            if p.p_type == 'm':
+                x[:, i] = x[:, i].clamp(min=p.p_min) / p.p_max
+
+        return x
+
+    def one_hot_tensor(self, x):
+        columns = []
+        new_types = []
+
+        for i, p in enumerate(self.params):
+            col = x[:, i]
+
+            if p.p_type == 'm':
+                columns.append(col.unsqueeze(1).float())
+                new_types.append('m')
+
+            elif p.p_type == 'b':
+                col = col.long()
+                d = F.one_hot(col, num_classes=2).float()
+                columns.append(d)
+                new_types.extend(['b'] * 2)
+
+            elif p.p_type in ('c', 'x'):
+                col = col.long()
+                d = F.one_hot(col, num_classes=p.n_classes).float()
+                columns.append(d)
+                new_types.extend([p.p_type] * p.n_classes)
+
+        x_out = torch.cat(columns, dim=1)
+        return x_out, new_types
+
+    def make_masks(self, expanded_types):
+        t = torch.tensor([ord(c) for c in expanded_types], dtype=torch.int32)
+
+        return (
+            t == ord('m'),
+            t == ord('b'),
+            t == ord('c'),
+            t == ord('x')
+        )
